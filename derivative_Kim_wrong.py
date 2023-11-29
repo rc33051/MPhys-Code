@@ -7,6 +7,11 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 
+'''
+THIS FILE IS OLD AND WILL BE REMOVED SOON
+'''
+
+
 
 def derivative_accelerated(q_2 = 1.5, y = 0, cutoff=9, alpha = 1, d = np.array([0,0,0])):
     return pv_derivative_accelerated(q_2, alpha)  + sum_derivative_accelerated(q_2, cutoff, alpha, d) + alpha*y
