@@ -113,13 +113,14 @@ def zeta(q_2_star=1.5, cutoff=9, alpha=-1, d = np.array([0,0,0])):
     return result
 
 
-def alpha_recommended(q_2_star, cutoff, d_scalar):
+def alpha_recommended(q_2_star, cutoff, d):
     '''
     This function returns the recommended alpha value for a given 
     q_2_star, cutoff and d_scalar and thus is the duplicate of the 
     snippet in the zeta function
     '''
 
+    d_scalar = np.linalg.norm(d)
     ML=4
     m_tilde_sq = (ML/np.pi)**2
 
