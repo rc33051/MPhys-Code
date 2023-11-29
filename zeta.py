@@ -8,6 +8,16 @@ import matplotlib.pyplot as plt
 import sympy as sp
 
 
+'''
+NOTES FOR ZETA FUNCTION
+
+This file contains the zeta function and thus is the heart of the code. 
+It is designed after the Kim, Sachrajda and Sharpe paper and uses their 
+convergence scheme. 
+
+'''
+
+
 def zeta_sum(q_2_star=1.5, cutoff=9, alpha=1, d = np.array([0,0,0]), m_tilde_sq = (4/np.pi)**2, beta_scalar = 0, gamma=1):
         
     d_scalar = np.linalg.norm(d)
@@ -34,8 +44,7 @@ def zeta_sum(q_2_star=1.5, cutoff=9, alpha=1, d = np.array([0,0,0]), m_tilde_sq 
     r_star_parallel = gamma*(r_parallel-omega_r*beta_scalar)
     r_star_sq = r_star_parallel**2 + r_perp_sq    
     omega_r_star = gamma*(omega_r -beta_scalar*r_parallel)
-
-    terms = omega_r_star/omega_r*np.exp(-alpha*(r_star_sq-q_2_star))/(q_2_star-r_star_sq)
+    terms = omega_r_star/omega_r*np.exp(-alpha*(r_star_sq-q_2_star))/(r_star_sq-q_2_star)
 
     return np.sum(terms)/np.sqrt(4*np.pi) 
 
@@ -328,44 +337,4 @@ def derivative_ks_sympy(q_2_star, d,  alpha, cutoff):
     f = sp.lambdify(( sp_k_par,sp_k_perp), deriv_summand, 'numpy')
     return (np.sum(f(r_parallel, np.sqrt(r_perp_sq)))- f_pv(x, alpha))/np.sqrt(4*np.pi)
 
-
-
-##below comparison between alpha recommended and the fixed alpha
-
-
-# rec = np.vectorize(alpha_recommended)
-
-
-# d = np.array([9,4,4])
-# #plot zeta as a function of q_2_star
-# Xisq = 1e3
-# alpha = 10**(-(np.log(Xisq)/np.log(10)-1.5))
-
-# q_2_star = np.linspace(0.1, 10, 200)
-# alphas = rec(q_2_star, Xisq, np.linalg.norm(d))
-# print(alphas)
-
-# print(alpha)
-
-# zeta_vals_1 = np.zeros(len(q_2_star))
-# for i in tqdm(range(len(q_2_star))):
-#     zeta_vals_1[i] = zeta(q_2_star[i], Xisq, alphas[i], np.array([1,0,0]))
-
-
-# zeta_vals_2 = np.zeros(len(q_2_star))
-# for i in tqdm(range(len(q_2_star))):
-#     zeta_vals_2[i] = zeta(q_2_star[i], Xisq, alpha, np.array([1,0,0]))
-
-# #plt.ylim(-10, 10)
-# plt.plot(q_2_star, zeta_vals_2- zeta_vals_1)
-# plt.grid()
-# #label
-# plt.xlabel(r"$q^2$")
-# plt.ylabel(r"$\zeta(q^2)$")
-# plt.title(r"$\zeta(q^2)$ for $\xi^2 = 3\times 10^3$")
-
-
-# plt.show()
-
-#print(second_deriv(0.07, 1e3, d = np.array([4,4,4])))
 
