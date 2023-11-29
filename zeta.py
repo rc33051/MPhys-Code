@@ -19,9 +19,16 @@ convergence scheme.
 
 
 def zeta_sum(q_2_star=1.5, cutoff=9, alpha=1, d = np.array([0,0,0]), m_tilde_sq = (4/np.pi)**2, beta_scalar = 0, gamma=1):
-        
+    
+    '''
+    This function calculates the sum part of the zeta function.
+    It does that using a spherical shell of radius Xi (cutoff) done
+    using the np.mehsgrid function. They are Lorentz transformed, evaluated
+    using the expression from K-S-S and summed.
+    '''
+
     d_scalar = np.linalg.norm(d)
-    #do better here
+    #find the unit vector in the direction of d
     if d_scalar:
         beta_norm = d/np.linalg.norm(d)     
     else:
@@ -44,27 +51,45 @@ def zeta_sum(q_2_star=1.5, cutoff=9, alpha=1, d = np.array([0,0,0]), m_tilde_sq 
     r_star_parallel = gamma*(r_parallel-omega_r*beta_scalar)
     r_star_sq = r_star_parallel**2 + r_perp_sq    
     omega_r_star = gamma*(omega_r -beta_scalar*r_parallel)
+
+    #evaluate the summand
     terms = omega_r_star/omega_r*np.exp(-alpha*(r_star_sq-q_2_star))/(r_star_sq-q_2_star)
-
-    return np.sum(terms)/np.sqrt(4*np.pi) 
-
+    #sum the terms
+    result = np.sum(terms)/np.sqrt(4*np.pi)
+    return result
 
 
 def zeta_pv(q_2=1.5, alpha=1):
-    ttmp = 2.0*(np.pi**2)*np.sqrt(q_2)\
+    '''
+    Uses formula for PV
+    '''
+    pv = 2.0*(np.pi**2)*np.sqrt(q_2)\
         * erfi(np.sqrt(alpha*q_2))\
         - 2.0*np.exp(alpha*q_2)\
         * np.sqrt(np.pi**3)/np.sqrt(alpha)
     
-    return ttmp/np.sqrt(4*np.pi)
+    return pv/np.sqrt(4*np.pi)
 
 
-def zeta(q_2_star=1.5, cutoff=9, alpha=1, d = np.array([0,0,0])):
+def zeta(q_2_star=1.5, cutoff=9, alpha=-1, d = np.array([0,0,0])):
+    '''
+    The input arguments are q_2_star (often called x) the cutoff which is 
+    Xi^2 (i.e. the square of the radius of the spherical shell) in lab-frame
+    alpha which is the convergence parameter, which in case set to -1 will
+    automatically pick the recommended value (see below) and d which is the
+    the dimensionless momentum to the centre of mass frame.
+    ML, although a variable is in this project set to the pion mass, 
+    which will be roughly 4, so it is internally set.
+
+    '''
+
+    #setting ML to pion mass
     ML = 4
     m_tilde_sq = (ML/np.pi)**2
 
     d_scalar = np.linalg.norm(d)
-    #do better here
+
+    #function below finds gamma and beta
     if d_scalar:
         beta = d_scalar/np.sqrt(d_scalar**2 + 4*q_2_star + m_tilde_sq)
         gamma = 1/np.sqrt(1-beta**2)
@@ -72,38 +97,53 @@ def zeta(q_2_star=1.5, cutoff=9, alpha=1, d = np.array([0,0,0])):
         beta = 0
         gamma = 1
 
+    #kappa is the of the cutoff radius in the com frame (equal to Xi if beta = 0)
     kappa = gamma*(np.sqrt(cutoff) - beta*np.sqrt(cutoff + 1/4*m_tilde_sq))
 
-    #alpha -1 if pick recommended alpha
+    #if alpha = -1, pick alpha for the user
     if alpha == -1:
         recommended_alpha = 10**(-(2*np.log(kappa)/np.log(10)-1.5))
     else:
         recommended_alpha = alpha
 
-    # #print("recommended alpha: ", recommended_alpha)
-
+    #find the sum and pv terms. PV already includes a minus sign.
     sum_result  = zeta_sum(q_2_star,cutoff, recommended_alpha, d, m_tilde_sq, beta, gamma)
-    return (-sum_result + zeta_pv(q_2_star,recommended_alpha))*gamma
+    #to be equivalent to the zeta function, this has to be multipled by gamma
+    result = (sum_result + zeta_pv(q_2_star,recommended_alpha))*gamma
+    return result
 
 
 def alpha_recommended(q_2_star, cutoff, d_scalar):
+    '''
+    This function returns the recommended alpha value for a given 
+    q_2_star, cutoff and d_scalar and thus is the duplicate of the 
+    snippet in the zeta function
+    '''
+
     ML=4
     m_tilde_sq = (ML/np.pi)**2
 
-    #do better here
+    #Since this function is only called if d not zero, we can directly proceed
     beta = d_scalar/np.sqrt(d_scalar**2 + 4*q_2_star + 1/4*m_tilde_sq)
     gamma = 1/np.sqrt(1-beta**2)
-
-    print(gamma)
     kappa = gamma*(np.sqrt(cutoff) - beta*np.sqrt(cutoff + 1/4*m_tilde_sq))
-    print(kappa**3/(gamma*np.sqrt(cutoff)**3))
-
     recommended_alpha = 10**(-(2*np.log(kappa)/np.log(10)-1.5))
+
     return recommended_alpha
 
 
 
-def derivative(q_2_star, cutoff, s, d):
+def derivative(q_2_star=1.5, cutoff= 9 , s = 1, d = np.array([0,0,0])):
+    '''
+    Outputs derivative of the zeta correctly **ONLY** for d = [0,0,0] 
+    where the expression is trivial to evaluate for all s derivatives.
+    Crucially, this does not include the s! factor, for convenience
+    when taylor expanding.
+    d ≠ 0 can be evaluated but will be some approximation of the true result
+
+    The inputs are x, the cutoff, the derivative order s and d
+    '''
+
     ML = 4
     m_tilde_sq = (ML/np.pi)**2
     
@@ -118,8 +158,6 @@ def derivative(q_2_star, cutoff, s, d):
         beta = 0
         gamma = 1
 
-
-
     ######################
     ###########SUM########
     
@@ -131,7 +169,7 @@ def derivative(q_2_star, cutoff, s, d):
     r = coords[res<=cutoff]
 
 
-    ####### LT the ns
+    ####### Use Rummakainen and Gottlieb's formula
     r_2 = np.einsum("ij,ij->i", r,r)
     r_parallel  = np.einsum("ij,j->i", r, beta_norm)
     #use braodcasting to multiply each of the dot products by the beta unit vector
@@ -143,6 +181,7 @@ def derivative(q_2_star, cutoff, s, d):
     sum_terms = np.sum(terms)
     return sum_terms/np.sqrt(4*np.pi) 
 
+######THE OTHER DERIVATIVES DO NOT CONVERGE OR ARE WRONG, WILL BE REMOVED IN FUTURE ############
 
 def first_deriv(q_2_star, cutoff,d):
 
