@@ -43,6 +43,7 @@ def zeta_sum(q_2_star=1.5, cutoff=9, alpha=1, d = np.array([0,0,0]), m_tilde_sq 
 
     ####### parallel and perp components of r
     r_2 = np.einsum("ij,ij->i", r,r)
+
     r_parallel  = np.einsum("ij,j->i", r, beta_norm)
     r_perp_sq = r_2 -r_parallel**2
     omega_r = np.sqrt(r_2+m_tilde_sq/4)
@@ -56,6 +57,7 @@ def zeta_sum(q_2_star=1.5, cutoff=9, alpha=1, d = np.array([0,0,0]), m_tilde_sq 
     terms = omega_r_star/omega_r*np.exp(-alpha*(r_star_sq-q_2_star))/(r_star_sq-q_2_star)
     #sum the terms
     result = np.sum(terms)/np.sqrt(4*np.pi)
+
     return result
 
 
@@ -252,6 +254,8 @@ def second_deriv(q_2_star, cutoff,d):
 
     ####### LT the ns
     r_2 = np.einsum("ij,ij->i", r,r)
+
+
     r_parallel  = np.einsum("ij,j->i", r, beta_norm)
     #use braodcasting to multiply each of the dot products by the beta unit vector
     r_perp_sq = r_2 -r_parallel**2
@@ -378,3 +382,11 @@ def derivative_ks_sympy(q_2_star, d,  alpha, cutoff):
     return (np.sum(f(r_parallel, np.sqrt(r_perp_sq)))- f_pv(x, alpha))/np.sqrt(4*np.pi)
 
 
+x_0  = 0.2843357183243443
+#x_0 = 1
+d = np.array([2,2,2])
+alpha = -1
+print(zeta(x_0, 1e4, alpha, d))
+
+
+###need to write code directly comparing r_2 of zeta and zeta large
