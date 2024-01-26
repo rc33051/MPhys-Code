@@ -50,7 +50,7 @@ def derivative_sum_LT(q_2_star=1.5, cutoff=9, d = np.array([0,0,0]), m_tilde_sq 
 
 def pv_derivative_LT(q_2, alpha):
     x = q_2
-    pv = np.pi**2/np.sqrt(x)\
+    pv = -np.pi**2/np.sqrt(x)\
         *erfi(np.sqrt(alpha*x))
     return pv/np.sqrt(4*np.pi)
 
@@ -79,7 +79,7 @@ def derivative_LT(q_2_star=1.5, cutoff=9, d = np.array([0,0,0]),alpha = -1, S = 
     
     
     #derivative of sum and pv
-    deriv_S = derivative_sum_LT(q_2_star, cutoff, d, m_tilde_sq, alpha, beta, gamma)+pv_derivative_LT(q_2_star, alpha)
+    deriv_S = derivative_sum_LT(q_2_star, cutoff, d, m_tilde_sq, alpha, beta, gamma)-pv_derivative_LT(q_2_star, alpha)
 
     #calculate value of zeta if ==-1 else use given value
     if S == -1:

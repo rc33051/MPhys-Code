@@ -73,7 +73,7 @@ def zeta_pv(q_2=1.5, alpha=1):
     return pv/np.sqrt(4*np.pi)
 
 
-def zeta(q_2_star=1.5, cutoff=9, alpha=-1, d = np.array([0,0,0])):
+def zeta(q_2_star=1.5, cutoff=9, alpha=-1, d = np.array([0,0,0]), ML = 4):
     '''
     The input arguments are q_2_star (often called x) the cutoff which is 
     Xi^2 (i.e. the square of the radius of the spherical shell) in lab-frame
@@ -86,7 +86,7 @@ def zeta(q_2_star=1.5, cutoff=9, alpha=-1, d = np.array([0,0,0])):
     '''
 
     #setting ML to pion mass
-    ML = 4
+
     m_tilde_sq = (ML/np.pi)**2
 
     d_scalar = np.linalg.norm(d)
@@ -149,6 +149,7 @@ def derivative(q_2_star=1.5, cutoff= 9 , s = 1, d = np.array([0,0,0])):
 
     ML = 4
     m_tilde_sq = (ML/np.pi)**2
+    E_cm_sq = 4*q_2_star + m_tilde_sq
     
     d_scalar = np.linalg.norm(d)
     #do better here
@@ -177,26 +178,78 @@ def derivative(q_2_star=1.5, cutoff= 9 , s = 1, d = np.array([0,0,0])):
     r_parallel  = np.einsum("ij,j->i", r, beta_norm)
     #use braodcasting to multiply each of the dot products by the beta unit vector
     r_perp_sq = r_2 -r_parallel**2
-
-    r_sq = 1/gamma**2*(r_parallel+ 1/2 * d_scalar)**2 + r_perp_sq
-    terms = 1/(r_sq-q_2_star)**(s+1)
+    r_parallel_sq = r_parallel**2
+    r_parallel_sq = 1/gamma**2*(r_parallel+ 1/2 * d_scalar)**2 
+    r_sq = r_parallel_sq+ r_perp_sq
+    D = r_sq-q_2_star
+    terms = np.exp(-alpha*D)/(D)**(s+1)*(1-4*beta**2/E_cm_sq*r_parallel_sq)
 
     sum_terms = np.sum(terms)
     return sum_terms/np.sqrt(4*np.pi) 
 
 ######THE OTHER DERIVATIVES DO NOT CONVERGE OR ARE WRONG, WILL BE REMOVED IN FUTURE ############
 
-def first_deriv(q_2_star, cutoff,d):
+# def first_deriv(q_2_star, cutoff,d):
+
+#     ML = 4
+#     m_tilde_sq = (ML/np.pi)**2
+    
+#     d_scalar = np.linalg.norm(d)
+#     E_cm = np.sqrt(d_scalar**2 + 4*q_2_star + m_tilde_sq)
+#     #do better here
+#     if d_scalar:
+#         beta_norm = d/np.linalg.norm(d)
+#         beta = d_scalar/E_cm
+#         gamma = 1/np.sqrt(1-beta**2)
+#     else:
+#         beta_norm = d
+#         beta = 0
+#         gamma = 1
+
+
+#     #create spherical shell containing the n vectors
+#     rng = np.arange(-int(np.sqrt(cutoff))-1, int(np.sqrt(cutoff))+2)
+#     res = (rng[:,np.newaxis, np.newaxis]**2+rng[np.newaxis,:,np.newaxis]**2+rng[np.newaxis,np.newaxis,:]**2)
+#     X,Y,Z = np.meshgrid(rng,rng,rng, indexing = 'ij')
+#     coords = np.stack((X,Y,Z), axis=3)
+#     r = coords[res<=cutoff]
+
+
+#     ####### LT the ns
+#     r_2 = np.einsum("ij,ij->i", r,r)
+#     r_parallel  = np.einsum("ij,j->i", r, beta_norm)
+#     #use braodcasting to multiply each of the dot products by the beta unit vector
+#     r_perp_sq = r_2 -r_parallel**2
+
+#     delta = r_parallel+ 1/2*d_scalar
+#     D_1 = -(1-4*(delta)**2*(d_scalar/E_cm**2)**2)
+
+#     r_sq = 1/gamma**2*(r_parallel+ 1/2 * d_scalar)**2 + r_perp_sq
+#     terms = -1/(r_sq-q_2_star)**(1+1)*D_1
+
+#     return np.sum(terms)/np.sqrt(4*np.pi)
+
+
+def first_deriv(q_2_star=1.5, d = np.array([0,0,0]), cutoff= 9 ,  alpha = 0.1):
+    '''
+    Outputs derivative of the zeta correctly **ONLY** for d = [0,0,0] 
+    where the expression is trivial to evaluate for all s derivatives.
+    Crucially, this does not include the s! factor, for convenience
+    when taylor expanding.
+    d ≠ 0 can be evaluated but will be some approximation of the true result
+
+    The inputs are x, the cutoff, the derivative order s and d
+    '''
 
     ML = 4
     m_tilde_sq = (ML/np.pi)**2
     
     d_scalar = np.linalg.norm(d)
-    E_cm = np.sqrt(d_scalar**2 + 4*q_2_star + m_tilde_sq)
-    #do better here
+    s = 4*q_2_star + m_tilde_sq
+    E = np.sqrt(d_scalar**2 + 4*q_2_star + m_tilde_sq)
     if d_scalar:
         beta_norm = d/np.linalg.norm(d)
-        beta = d_scalar/E_cm
+        beta = d_scalar/E
         gamma = 1/np.sqrt(1-beta**2)
     else:
         beta_norm = d
@@ -212,19 +265,20 @@ def first_deriv(q_2_star, cutoff,d):
     r = coords[res<=cutoff]
 
 
-    ####### LT the ns
+    ####### Use Rummakainen and Gottlieb's formula
     r_2 = np.einsum("ij,ij->i", r,r)
     r_parallel  = np.einsum("ij,j->i", r, beta_norm)
     #use braodcasting to multiply each of the dot products by the beta unit vector
     r_perp_sq = r_2 -r_parallel**2
+    r_parallel_sq = r_parallel**2
+    r_parallel_sq = 1/gamma**2*(r_parallel+ 1/2 * d_scalar)**2 
+    r_sq = r_parallel_sq+ r_perp_sq
+    D = r_sq-q_2_star
+    terms = np.exp(-alpha*D)/(D)*(alpha+1/D)*(1-4*beta**2/s*r_parallel_sq)
 
-    delta = r_parallel+ 1/2*d_scalar
-    D_1 = -(1-4*(delta)**2*(d_scalar/E_cm**2)**2)
+    sum_terms = np.sum(terms)
+    return( sum_terms + 2*np.pi**2/np.sqrt(q_2_star)*erfi(np.sqrt(alpha*q_2_star)))/np.sqrt(4*np.pi) 
 
-    r_sq = 1/gamma**2*(r_parallel+ 1/2 * d_scalar)**2 + r_perp_sq
-    terms = -1/(r_sq-q_2_star)**(1+1)*D_1
-
-    return np.sum(terms)/np.sqrt(4*np.pi)
 
 def second_deriv(q_2_star, cutoff,d):
 
