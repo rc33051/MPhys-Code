@@ -82,7 +82,6 @@ def root_finding(d, k=4):
 
 
     ############Creates Plots#####################  
-
     for i in first_asymptotes:
         q_2_plot= np.insert(q_2_plot, np.argmax(q_2_plot >= i),i)
         z_d_plot = np.insert(z_d_plot, np.argmax(q_2_plot >= i),np.nan)
