@@ -88,8 +88,8 @@ def zeta(q_2_star=1.5, cutoff=9, alpha=-1, d = np.array([0,0,0]), ML = 4):
     #setting ML to pion mass
 
     m_tilde_sq = (ML/np.pi)**2
-
     d_scalar = np.linalg.norm(d)
+    x = q_2_star
 
     #function below finds gamma and beta
     if d_scalar:
@@ -99,19 +99,29 @@ def zeta(q_2_star=1.5, cutoff=9, alpha=-1, d = np.array([0,0,0]), ML = 4):
         beta = 0
         gamma = 1
 
-    #kappa is the of the cutoff radius in the com frame (equal to Xi if beta = 0)
-    kappa = gamma*(np.sqrt(cutoff) - beta*np.sqrt(cutoff + 1/4*m_tilde_sq))
+
+    #if cutoff = -1, pick cutoff for the user
+    if cutoff == -1:
+        kappa = np.sqrt(10**(1.24)/alpha**(1.023))
+        if kappa**2<100*x:
+            kappa = np.sqrt(100*x)
+
+        omega_k = np.sqrt(kappa**2 + m_tilde_sq/4)
+        Xi = gamma*(kappa + omega_k * beta)
+        cutoff = Xi**2
+
 
     #if alpha = -1, pick alpha for the user
     if alpha == -1:
-        recommended_alpha = 10**(-(2*np.log(kappa)/np.log(10)-1.5))
-    else:
-        recommended_alpha = alpha
+        #kappa is the of the cutoff radius in the com frame (equal to Xi if beta = 0)
+        kappa = gamma*(np.sqrt(cutoff) - beta*np.sqrt(cutoff + 1/4*m_tilde_sq))
+        alpha = 10**(-(2*np.log(kappa)/np.log(10)-1.5))
+
 
     #find the sum and pv terms. PV already includes a minus sign.
-    sum_result  = zeta_sum(q_2_star,cutoff, recommended_alpha, d, m_tilde_sq, beta, gamma)
+    sum_result  = zeta_sum(q_2_star,cutoff, alpha, d, m_tilde_sq, beta, gamma)
     #to be equivalent to the zeta function, this has to be multipled by gamma
-    result = (sum_result + zeta_pv(q_2_star,recommended_alpha))*gamma
+    result = (sum_result + zeta_pv(q_2_star,alpha))*gamma
     return result
 
 

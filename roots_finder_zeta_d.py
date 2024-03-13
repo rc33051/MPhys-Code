@@ -10,6 +10,8 @@ from pathlib import Path
 
 
 
+
+
 def root_finding(d, k=4):
     d = np.array(d)
     a = k-1.5
@@ -67,10 +69,10 @@ def root_finding(d, k=4):
 
 
     ############Saves Data#####################
-    Path("roots_zeta").mkdir( exist_ok=True)
+    Path("roots_zeta_old").mkdir( exist_ok=True)
 
     folder_name = "d_" + str(d).replace(" ", "").replace("[", "").replace("]", "")
-    Path("roots_zeta/"+folder_name).mkdir( exist_ok=True)
+    Path("roots_zeta_old/"+folder_name).mkdir( exist_ok=True)
 
     #alpha and a are set internally
 
@@ -78,7 +80,7 @@ def root_finding(d, k=4):
     a = "set internally"
 
     meta_data = np.array([Xi,k, alpha, a, str(d)])
-    np.savez("roots_zeta/"+folder_name+"/data", zeros  = zeros, asymptotes = first_asymptotes, meta_data = meta_data, q_2 = q_2, z_d_results = z_d_results)
+    np.savez("roots_zeta_old/"+folder_name+"/data", zeros  = zeros, asymptotes = first_asymptotes, meta_data = meta_data, q_2 = q_2, z_d_results = z_d_results)
 
 
     ############Creates Plots#####################  
@@ -120,7 +122,7 @@ def root_finding(d, k=4):
 
     plt.grid()
 
-    plt.savefig("roots_zeta/"+folder_name+"/zeros_and_asymptotes_" + folder_name + ".png")
+    plt.savefig("roots_zeta_old/"+folder_name+"/zeros_and_asymptotes_" + folder_name + ".png")
     plt.close()
 
 
