@@ -56,6 +56,7 @@ def zeta_sum(q_2_star=1.5, cutoff=9, alpha=1, d = np.array([0,0,0]), m_tilde_sq 
     #evaluate the summand
     terms = omega_r_star/omega_r*np.exp(-alpha*(r_star_sq-q_2_star))/(r_star_sq-q_2_star)
     #sum the terms
+    np.random.shuffle(terms)
     result = np.sum(terms)/np.sqrt(4*np.pi)
 
     return result
