@@ -70,4 +70,47 @@ def main():
         derivative_directory(d_vec, ML, n_max, alpha)
 
 
+
+
+
+def main1():
+
+    d_vec = np.array([0,0,2])
+    ML = 6
+    alpha = 0.01
+    n_max = 1
+
+    data = np.load(file_location(d_vec, ML))
+
+    zeta_d = data["z_d_results"]
+    asymptotes = data["asymptotes"]
+    zeros = data["zeros"]
+    q_2 = data["q_2"]
+
+    q_derivatives = np.linspace(0,3, 200)
+
+    accurate_deriv = np.zeros_like(q_derivatives)
+    #numerical derivative of zeta
+
+    dx = np.diff(q_2)
+    dy_dx = np.diff(zeta_d)/dx
+
+    cutoffs = np.zeros_like(q_derivatives)
+
+    for i in range(len(q_derivatives)):
+        cutoffs[i] = relation_alpha_cutoff(d_vec, alpha, q_derivatives[i], ML)
+
+    print(cutoffs)
+
+    derivative_array = np.zeros((len(zeros) , n_max))
+
+    for i in tqdm(range(len(q_derivatives))):
+        #4e4 is more enough if we want error of 10^-8 at alpha = 0.01
+        derivative_array[i] = derivative(n_max, d_vec, q_derivatives[i], alpha, cutoffs[i], ML )
+
+
+    plot_nice(q_derivatives,derivative_array[:,0], asymptotes, zeros, d_vec )
+
+    
+
 main()
