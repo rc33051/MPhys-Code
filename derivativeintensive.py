@@ -52,18 +52,18 @@ def derivative_directory(d_vec, ML, n_max, alpha):
 
 
 def main():
-    ML = 4
+    ML = 6
     alpha = 0.01
     n_max = 3
 
 
     print(os.getcwd())
     # chagne working directory to the one with the data
-    os.chdir('MPhys-Code')
+    #os.chdir('MPhys-Code')
     #print(    np.load(file_location([0,0,0], ML)) )
 
-    ds = np.array([ [1,0,0],[1,1,0] ,[1,1,1], [2,0,0] ])
-    #ds = np.array([ [0,0,1],[0,1,1] ,[1,1,1], [0,0,2] ])
+    #ds = np.array([ [1,0,0],[1,1,0] ,[1,1,1], [2,0,0] ])
+    ds = np.array([ [0,0,1],[0,1,1] ,[1,1,1], [0,0,2] ])
     for i in range(len(ds)):
         d_vec = ds[i]
         print('Next ', ds[i])
