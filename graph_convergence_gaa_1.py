@@ -25,8 +25,8 @@ def limiting(a,b, d_vec, x, alpha, cutoff, ML):
 def main():
     a = 1
     b = 0
-    d_vec = np.array([1,0,0])
-    x = 0
+    d_vec = np.array([0,0,0])
+    x = 0.4728942473179055
     alpha = 0.1
     cutoff = 5e4
     ML = 4
@@ -39,7 +39,7 @@ def main():
     Z = np.zeros_like(A)
     for i in tqdm(range(len(A))):
         for j in range(len(C)):
-            Z[i,j] = limiting(a,b,d_vec, x, A[i,j], C[i,j], ML)
+            Z[i,j] = derivative(1, d_vec, x, A[i,j],C[i,j],ML) #limiting(a,b,d_vec, x, A[i,j], C[i,j], ML)
 
 
 
@@ -52,5 +52,8 @@ def main():
 
     plt.plot()
     plt.show()
+
+    np.savez("temp", Z = Z)
+    print(Z)
 
 main()
