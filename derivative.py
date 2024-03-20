@@ -14,13 +14,15 @@ def dynamical(x = 0, d_vec = np.array([0,0,0]), ML = 4):
     return beta, gamma
 
 
-def relation_alpha_cutoff(d =0, alpha = 1,x  = 0):
+def relation_alpha_cutoff(d_vec =np.array([0,0,0]), alpha = 1,x  = 0, ML = 4):
     ''' 
     This function finds the cutoff based on a provided alpha.
     The relation between the two was obtained by graphically 
     solving for an error of 1e-8. This was found by doing the 
     integral provided that x*100< Xi^2
     '''
+
+    d = np.linalg.norm(d_vec)
 
     kappa = np.sqrt(10**(1.24)/alpha**(1.023))
     if kappa**2<100*x:
@@ -39,7 +41,7 @@ def relation_alpha_cutoff(d =0, alpha = 1,x  = 0):
 
     Xi_sq = Xi**2
 
-    return Xi_sq #-1e5
+    return Xi_sq 
 
 
 
@@ -205,13 +207,13 @@ def derivative(n_max = 1, d_vec = np.array([1,0,0]), x = 0, alpha = 0.01, cutoff
             if d == 0:
                 #print("ok")
                 if j == 0: 
-                    FV_matrix[i,j] = deltaFV(i,j,d_vec, x, cutoff, alpha, ML, cutoff_high )
+                    FV_matrix[i,j] = deltaFV(i,j,d_vec, x, cutoff, alpha, ML )
                 else:
                     FV_matrix[i,j] = 0
 
             else:
                 # the delta FV function has some more conditions
-                FV_matrix[i,j] = deltaFV(i,j,d_vec, x, cutoff, alpha, ML, cutoff_high)
+                FV_matrix[i,j] = deltaFV(i,j,d_vec, x, cutoff, alpha, ML)
 
     #print(FV_matrix)
 
