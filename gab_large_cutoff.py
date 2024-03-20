@@ -30,7 +30,8 @@ def g_ab(a=1,b=0,d = np.array([0,0,0]),q_2_star=1.5, cutoff=9, alpha=1,  ML = 4)
     #create spherical shell containing the n vectors
     Xi = int(np.sqrt(cutoff))+1 #+1 to make sure xi^2 is in range
     
-    max_size = 50
+    max_size = 30
+    #print(max_size)
     partitions = int(np.ceil(Xi/max_size))
     intervals = np.arange(-partitions, partitions)*max_size #Xi appears at positive end
     #does not change the result
@@ -70,7 +71,7 @@ def g_ab_parallel(a=1, b=0, d=np.array([0, 0, 0]), q_2_star=1.5, cutoff=9, alpha
         beta_norm = d
 
     Xi = int(np.sqrt(cutoff)) + 1
-    max_size = 50
+    max_size = 60
     partitions = int(np.ceil(Xi / max_size))
     intervals = np.arange(-partitions, partitions) * max_size
     A, B, C = np.meshgrid(intervals, intervals, intervals, indexing='ij')
