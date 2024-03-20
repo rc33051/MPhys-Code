@@ -23,12 +23,11 @@ def limiting(a,b, d_vec, x, alpha, cutoff, ML):
 
 
 def main():
-    a = 1
-    b = 0
-    d_vec = np.array([0,0,0])
-    x = 0.4728942473179055
+
+    d_vec = np.array([1,0,0])
+    x = 0.643941
     alpha = 0.1
-    cutoff = 5e4
+    #cutoff = 5e4
     ML = 4
 
     resolution = 10
