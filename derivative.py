@@ -106,12 +106,12 @@ def g(a = 1, b = 1, d = np.array([1,0,0]), x = 0 ,  cutoff = 2e4,alpha = 0.1, ML
     This uses an extension Rummakainen and Gottlieb prescription.
     '''
 
-    # if a -b >1/2 the sum converges, so we can set alpha = 0
-    if a == b+1:
-        alpha = 0
-    if a>b+1:
-        cutoff = 1e2
-        alpha = 0
+    # # if a -b >1/2 the sum converges, so we can set alpha = 0
+    # if a == b+1:
+    #     alpha = 0
+    # if a>b+1:
+    #     cutoff = 1e2
+    #     alpha = 0
 
 
 
