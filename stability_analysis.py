@@ -4,11 +4,12 @@ from scipy.optimize import root_scalar
 from tqdm import tqdm
 from pathlib import Path
 from zeta import zeta
+from zeta_large_cutoff import zeta 
 
 
 
 
-def KSS_new(d =0, alpha = 1,x  = 0):
+def KSS(d =0, alpha = 1,x  = 0):
 
 
     kappa = np.sqrt(10**(1.24)/alpha**(1.023))
@@ -33,7 +34,7 @@ def KSS_new(d =0, alpha = 1,x  = 0):
 
 
 
-def specific_zero(d1,d2,d3, alpha, Xi, A_l,A_u ):
+def specific_zero(d1,d2,d3, alpha, Xi, A_l,A_u,ML):
     d_vec = np.array([d1,d2,d3])
     dx = 1e-11
     lower_asy = A_l
@@ -44,10 +45,10 @@ def specific_zero(d1,d2,d3, alpha, Xi, A_l,A_u ):
         zero = (lower_asy + upper_asy)/2
     else:
         try:
-            zero = root_scalar(zeta,args=(Xi, alpha, d_vec),bracket = [lower_asy+dx, upper_asy-dx]).root
+            zero = root_scalar(zeta,args=(Xi, alpha, d_vec,ML),bracket = [lower_asy+dx, upper_asy-dx]).root
         except ValueError:
             print("failed at q_2 = ", lower_asy+dx, upper_asy-dx)
-            print("values at these points: ", round(zeta(lower_asy+dx, Xi, alpha, d_vec)), round(zeta(upper_asy-dx, Xi, alpha, d_vec)))
+            print("values at these points: ", round(zeta(lower_asy+dx, Xi, alpha, d_vec, ML)), round(zeta(upper_asy-dx, Xi, alpha, d_vec,ML)))
             zero = (lower_asy + upper_asy)/2
 
 
@@ -57,14 +58,17 @@ def specific_zero(d1,d2,d3, alpha, Xi, A_l,A_u ):
 
 
 
-KSS_new = np.vectorize(KSS_new)
+KSS = np.vectorize(KSS)
 specific_zero = np.vectorize(specific_zero)
 
 
-def stability_analysis(d_vec = np.array([0,0,0]), alpha=0.01, resolution=6):
-    folder_name = "d_" + str(d_vec).replace(" ", "").replace("[", "").replace("]", "")
+def stability_analysis(d_vec = np.array([0,0,0]), alpha=0.01, resolution=6, ML = 4):
 
-    data = np.load("roots_zeta/"+folder_name+"/data.npz")
+
+
+    directory = "roots_zeta/ML_{}/".format(ML)
+    folder_name = "d_" + str(d_vec).replace(" ", "").replace("[", "").replace("]", "")
+    data = np.load(directory+folder_name+"/data.npz")
 
 
     zeros_before = data["zeros"]
@@ -73,7 +77,7 @@ def stability_analysis(d_vec = np.array([0,0,0]), alpha=0.01, resolution=6):
     upper_asy = asymptotes_before[1:]
 
     d_sq = np.linalg.norm(d_vec)**2
-    kappas = KSS_new(d_sq, alpha, zeros_before)
+    kappas = KSS(d_sq, alpha, zeros_before)
 
     #for meshgrid
     alpha_min = np.log10(alpha)-1/2
@@ -98,7 +102,7 @@ def stability_analysis(d_vec = np.array([0,0,0]), alpha=0.01, resolution=6):
         ALPHAS, CUTOFFS = np.meshgrid(alphas, cutoffs)
         Z = np.zeros_like(ALPHAS)
 
-        Z = specific_zero(d1,d2,d3, ALPHAS, CUTOFFS, lower_asy[i], upper_asy[i])
+        Z = specific_zero(d1,d2,d3, ALPHAS, CUTOFFS, lower_asy[i], upper_asy[i], ML)
 
         ALPHA_TOTAL[i] = ALPHAS
         CUTOFF_TOTAL[i] = CUTOFFS
@@ -109,22 +113,17 @@ def stability_analysis(d_vec = np.array([0,0,0]), alpha=0.01, resolution=6):
 
     ############Saves Data#####################
     Path("root_stability").mkdir( exist_ok=True)
-
+    directory = "root_stability/ML_{}/".format(ML)
+    Path(directory).mkdir( exist_ok=True)
     folder_name = "d_" + str(d_vec).replace(" ", "").replace("[", "").replace("]", "")
-    Path("root_stability/"+folder_name).mkdir( exist_ok=True)
+    Path(directory+folder_name).mkdir( exist_ok=True)
 
-    meta_data = np.array([alpha, resolution, str(d_vec)])
+    meta_data = np.array([alpha, resolution, str(d_vec), ML])
     zeros_before = np.array(zeros_before)
     asymptotes_before = np.array(asymptotes_before)
 
 
-    np.savez("root_stability/"+folder_name+"/data",ALPHA_TOTAL = ALPHA_TOTAL, CUTOFF_TOTAL = CUTOFF_TOTAL, Z_TOTAL = Z_TOTAL, zeros_before  = zeros_before, asymptotes_before = asymptotes_before, meta_data = meta_data)
-
-
-
-
-
-
+    np.savez(directory+ folder_name + "/data",ALPHA_TOTAL = ALPHA_TOTAL, CUTOFF_TOTAL = CUTOFF_TOTAL, Z_TOTAL = Z_TOTAL, zeros_before  = zeros_before, asymptotes_before = asymptotes_before, meta_data = meta_data)
 
     fig, axs = plt.subplots(5, 4, figsize=(30, 25))
 
@@ -134,8 +133,11 @@ def stability_analysis(d_vec = np.array([0,0,0]), alpha=0.01, resolution=6):
         row = i // 4
         col = i % 4
         
+        alpha_min, alpha_max = np.log10(ALPHA_TOTAL[i].min()), np.log10(ALPHA_TOTAL[i].max())
+        cutoff_min, cutoff_max = np.log10(CUTOFF_TOTAL[i].min()), np.log10(CUTOFF_TOTAL[i].max())
+        extent = [alpha_min, alpha_max, cutoff_min, cutoff_max]
         # Plot each column in a separate subplot
-        im = axs[row, col].contourf(np.log10(ALPHA_TOTAL[i]), np.log10(CUTOFF_TOTAL[i]), np.log10(np.abs(Z_TOTAL[i]- zeros_before[i])), levels=resolution**3 )
+        im = axs[row, col].imshow( np.log10(np.abs(Z_TOTAL[i]- zeros_before[i])), aspect='auto', origin='lower', extent=extent, interpolation='none' )
         axs[row, col].set_xlabel('$\log_{10}\left(\\alpha\\right)$')
         axs[row, col].set_ylabel('$\log_{10}\left(\Xi^2\\right)$')
         axs[row, col].set_title('$U_{{{}}}$  = {:.3f}'.format(i+1,zeros_before[i]))
@@ -149,7 +151,6 @@ def stability_analysis(d_vec = np.array([0,0,0]), alpha=0.01, resolution=6):
 
     # Show the plot
     fig.suptitle(f'Root Stability for $\\vec d  = {{{d_vec}}}$ \n Results given as $\log_{{10}}\left( \left|{{U_i-U_i(\\alpha, \Xi^2)}}\\right|\\right)$ ', fontsize=20)
-    plt.savefig("root_stability/"+folder_name+"/stability.png")
-
+    plt.savefig(directory+ folder_name + "/stability.png")
 
 

@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 
-def root_finding(d, k=4):
+def root_finding(d=[0,0,1], k=4, ML=4):
     d = np.array(d)
     a = k-1.5
     Xi = 10**k

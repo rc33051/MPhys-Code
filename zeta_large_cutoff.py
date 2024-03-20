@@ -6,7 +6,7 @@ from scipy.special import erfi
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import sympy as sp
-
+from concurrent.futures import ProcessPoolExecutor
 
 
 
@@ -30,16 +30,16 @@ def zeta_sum(q_2_star=1.5, cutoff=9, alpha=1, d = np.array([0,0,0]), m_tilde_sq 
     #create spherical shell containing the n vectors
     Xi = int(np.sqrt(cutoff))+1 #+1 to make sure xi^2 is in range
     
-    max_size = 100
+    max_size = 50
     partitions = int(np.ceil(Xi/max_size))
     intervals = np.arange(-partitions, partitions)*max_size #Xi appears at positive end
     #does not change the result
    
     A, B, C  = np.meshgrid(intervals,intervals, intervals) 
-
+    tasks = []
 
     result = 0
-    for i in tqdm(range(len(A))):
+    for i in range(len(A)):
         for j in range(len(A[i])):
             for k in range(len(A[i,j])):
                         lower_bounds = np.array([A[i,j,k],B[i,j,k],C[i,j,k]])
@@ -47,12 +47,18 @@ def zeta_sum(q_2_star=1.5, cutoff=9, alpha=1, d = np.array([0,0,0]), m_tilde_sq 
 
                         #if the minima (of magnitudes) are all below the cutoff, proceed
                         if np.sum(np.min([lower_bounds**2,upper_bounds**2], axis=0)) <=cutoff:
-                            temp_result = evaluate_terms_summand(lower_bounds, upper_bounds, q_2_star, cutoff, alpha,  beta_scalar, beta_norm, gamma, m_tilde_sq)
-                            result += temp_result
-    return result
+                            args = (lower_bounds, upper_bounds, q_2_star, cutoff, alpha,  beta_scalar, beta_norm, gamma, m_tilde_sq)
+                            tasks.append(args)
+
+
+    with ProcessPoolExecutor() as executor:
+        result = list(tqdm(executor.map(unpack_evaluate_terms_summand, tasks), total=len(tasks)))
+    return sum(result)
 
 
 
+def unpack_evaluate_terms_summand(args):
+    return evaluate_terms_summand(*args)
 
 def evaluate_terms_summand(lower_bounds, upper_bounds, x, cutoff, alpha,  beta, beta_norm, gamma, m_tilde_sq):
         
@@ -112,7 +118,7 @@ def zeta_pv(q_2=1.5, alpha=1):
     return pv/np.sqrt(4*np.pi)
 
 
-def zeta(q_2_star=1.5, cutoff=9, alpha=-1, d = np.array([0,0,0])):
+def zeta(q_2_star=1.5, cutoff=9, alpha=-1, d = np.array([0,0,0]), ML=4):
     '''
     The input arguments are q_2_star (often called x) the cutoff which is 
     Xi^2 (i.e. the square of the radius of the spherical shell) in lab-frame
@@ -125,7 +131,6 @@ def zeta(q_2_star=1.5, cutoff=9, alpha=-1, d = np.array([0,0,0])):
     '''
 
     #setting ML to pion mass
-    ML = 4
     m_tilde_sq = (ML/np.pi)**2
 
     d_scalar = np.linalg.norm(d)
@@ -157,12 +162,12 @@ def zeta(q_2_star=1.5, cutoff=9, alpha=-1, d = np.array([0,0,0])):
 
 
 
-x_0  = 0.2843357183243443
+# x_0  = 0.2843357183243443
 
-x_0  = np.round(x_0, 8)
+# x_0  = np.round(x_0, 8)
 
 
-#x_0 = 1
-d = np.array([2,2,2])
-alpha  = -1
-print(round(zeta(x_0, 1e6, alpha, d),8))
+# #x_0 = 1
+# d = np.array([2,2,2])
+# alpha  = -1
+# print(round(zeta(x_0, 1e6, alpha, d),8))

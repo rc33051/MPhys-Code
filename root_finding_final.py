@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 
-def root_finding(d_vec, alpha):
+def root_finding(d_vec = [0,0,1], alpha =0.1, ML =4):
 
 
     d_vec = np.array(d_vec)
@@ -19,7 +19,7 @@ def root_finding(d_vec, alpha):
     Xi = -1  ##so that system recommends cutoff itself
 
 
-    asymptotes = f_asymptotes(d_vec, 1e4)
+    asymptotes = f_asymptotes(d_vec, 1e4, ML)
     asymptote_max = np.max(asymptotes)
 
 
@@ -48,10 +48,10 @@ def root_finding(d_vec, alpha):
             zeros[i] = (lower_asy[i] + upper_asy[i])/2
         else:
             try:
-                zeros[i] = root_scalar(zeta,args=(Xi, alpha, d_vec),bracket = [lower_asy[i]+dx, upper_asy[i]-dx]).root
+                zeros[i] = root_scalar(zeta,args=(Xi, alpha, d_vec, ML),bracket = [lower_asy[i]+dx, upper_asy[i]-dx]).root
             except ValueError:
                 print("failed at q_2 = ", lower_asy[i]+dx, upper_asy[i]-dx)
-                print("values at these points: ", round(zeta(lower_asy[i]+dx, Xi, alpha_recommended(lower_asy[i], Xi, d_vec), d_vec)), round(zeta(upper_asy[i]-dx, Xi, alpha, d_vec)))
+                print("values at these points: ", round(zeta(lower_asy[i]+dx, Xi, alpha, d_vec)), round(zeta(upper_asy[i]-dx, Xi, alpha, d_vec)))
                 zeros[i] = (lower_asy[i] + upper_asy[i])/2
 
 
@@ -60,7 +60,7 @@ def root_finding(d_vec, alpha):
     q_2 = np.linspace(0, first_asymptotes[-1], 6000)
     z_d_results = np.zeros_like(q_2)
     for i in tqdm(range(len(z_d_results))):
-        z_d_results[i] = zeta(q_2[i], Xi, alpha, d_vec)
+        z_d_results[i] = zeta(q_2[i], Xi, alpha, d_vec, ML)
 
     z_d_plot = np.copy(z_d_results)
     q_2_plot = np.copy(q_2)
@@ -70,9 +70,10 @@ def root_finding(d_vec, alpha):
 
     ############Saves Data#####################
     Path("roots_zeta").mkdir( exist_ok=True)
-
+    directory = "roots_zeta/ML_{}/".format(ML)
+    Path(directory).mkdir( exist_ok=True)
     folder_name = "d_" + str(d_vec).replace(" ", "").replace("[", "").replace("]", "")
-    Path("roots_zeta/"+folder_name).mkdir( exist_ok=True)
+    Path(directory+folder_name).mkdir( exist_ok=True)
 
     #alpha and a are set internally
 
@@ -80,8 +81,8 @@ def root_finding(d_vec, alpha):
         Xi = "Set internally"
  
 
-    meta_data = np.array([Xi, alpha, str(d_vec)])
-    np.savez("roots_zeta/"+folder_name+"/data", zeros  = zeros, asymptotes = first_asymptotes, meta_data = meta_data, q_2 = q_2, z_d_results = z_d_results)
+    meta_data = np.array([Xi, alpha, str(d_vec), ML])
+    np.savez(directory+folder_name+"/data", zeros  = zeros, asymptotes = first_asymptotes, meta_data = meta_data, q_2 = q_2, z_d_results = z_d_results)
 
 
     ############Creates Plots#####################  
@@ -123,7 +124,7 @@ def root_finding(d_vec, alpha):
 
     plt.grid()
 
-    plt.savefig("roots_zeta/"+folder_name+"/zeros_and_asymptotes_" + folder_name + ".png")
+    plt.savefig(directory+folder_name+"/zeros_and_asymptotes_" + folder_name + ".png")
     plt.close()
 
 

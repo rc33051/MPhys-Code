@@ -9,15 +9,7 @@ import matplotlib.pyplot as plt
 
 
 
-def asymptotes(d = np.array([0,0,0]), cutoff=1e3):
-    
-    #print(q_2)
-    #pion mass
-    m = 1
-    
-    #box_length
-    #L = a*(100)
-    ML = 4
+def asymptotes(d = np.array([0,0,0]), cutoff=1e3, ML = 4):
 
     m_tilde_sq = (ML/np.pi)**2
 
