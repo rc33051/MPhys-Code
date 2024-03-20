@@ -173,20 +173,20 @@ def deltaFV(a = 1, b= 0, d_vec = np.array([1,0,0]), x = 0, cutoff = 2e4, alpha =
     if (a==0 and b==0): #the G_00 term will always be 0
         return 0
     
-    elif (a==b): #if a = b then we need the integral for convergence
+    elif (a>=b): #if a = b then we need the integral for convergence
         if cutoff>1e4:
             return g_ab_large(a,b,d_vec,x, cutoff, alpha, ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
         else:
             return g(a,b,d_vec,x,cutoff, alpha, ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
     
-    elif (a==b+1): #if a = b+1 th sum converges but we need need higher cutoff
-        if cutoff_high>1e4:
-            return g_ab_large(a,b,d_vec,x, cutoff_high, 0, ML)
-        else:
-            return g(a,b,d_vec,x, cutoff_high, 0,   ML)
+    # elif (a>b): #if a = b+1 th sum converges but we need need higher cutoff
+    #     if cutoff_high>1e4:
+    #         return g_ab_large(a,b,d_vec,x, cutoff_high, alpha, ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
+    #     else:
+    #         return g(a,b,d_vec,x, cutoff_high, alpha,   ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
     
-    elif a>b: #if a>b the sum converges quickly
-        return g(a,b,d_vec,x, 1e2, 0,   ML)
+    # elif a>b: #if a>b the sum converges quickly
+    #     return g(a,b,d_vec,x, 1e2, 0,   ML)
 
     else: #if a<b the FV operator is 0
         return 0
@@ -203,6 +203,7 @@ def derivative(n_max = 1, d_vec = np.array([1,0,0]), x = 0, alpha = 0.01, cutoff
 
             #since all coefficients will be zero if d = 0, we can skip their calculation
             if d == 0:
+                #print("ok")
                 if j == 0: 
                     FV_matrix[i,j] = deltaFV(i,j,d_vec, x, cutoff, alpha, ML, cutoff_high )
                 else:

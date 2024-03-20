@@ -8,7 +8,7 @@ def save_unique_npz(directory, file_name, **data):
     counter = 0
     while os.path.exists(filename.format(counter)):
         counter += 1
-        
+
     np.savez(filename.format(counter), **data)
 
 
