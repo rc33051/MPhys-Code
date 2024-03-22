@@ -1,7 +1,9 @@
 
 from tqdm import tqdm
-from standard_imports import *
+import numpy as np
+#from standard_imports import *
 import os 
+from derivative import g
 from derivative import Integrals as U
 from gab_large_cutoff import g_ab_parallel as g_large
 
@@ -13,10 +15,12 @@ def limiting(a,b, d_vec, x, alpha, cutoff, ML):
     mtilde_sq = (ML/np.pi)**2
     beta = d/np.sqrt(d**2 + 4*x+mtilde_sq)
     gam =1/np.sqrt(1-beta**2)
-
-    if cutoff>5e3:
-        #print('ok')
-        return g_large(a,b,d_vec, x, cutoff, alpha, ML )-gam**(2*b+1)*U(a,b,x,alpha)
+    print(a, b)
+    #if cutoff>5e3:
+    #print('ok')
+    #print(a,b)
+    #print(gam**(2*b+1))
+    return g_large(a,b,d_vec, x, cutoff, alpha, ML )-gam**(1+2*b)*U(a,b,x,alpha)
 
     return g(a,b,d_vec, x, cutoff, alpha, ML )-gam**(2*b+1)*U(a,b,x,alpha)
 
@@ -30,15 +34,19 @@ def main():
     #cutoff = 5e4
     ML = 4
 
+    a = 1
+    b = 1
+
     resolution = 10
-    alpha = np.logspace(-1,-6,resolution)
-    cutoff = np.logspace(1,6, resolution)
+    alpha = np.logspace(-1,-7,resolution)
+    cutoff = np.logspace(1,7, resolution)
 
     A, C = np.meshgrid(alpha, cutoff, indexing='ij')
     Z = np.zeros_like(A)
     for i in tqdm(range(len(A))):
         for j in range(len(C)):
-            Z[i,j] = derivative(1, d_vec, x, A[i,j],C[i,j],ML) #limiting(a,b,d_vec, x, A[i,j], C[i,j], ML)
+            Z[i,j] = limiting(a,b, d_vec, x, A[i,j],C[i,j],ML)
+            #derivative(1, d_vec, x, A[i,j],C[i,j],ML) #limiting(a,b,d_vec, x, A[i,j], C[i,j], ML)
 
 
 

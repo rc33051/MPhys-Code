@@ -229,4 +229,8 @@ def derivative(n_max = 1, d_vec = np.array([1,0,0]), x = 0, alpha = 0.01, cutoff
     return derivatives/np.sqrt(4*np.pi)
     
 
+def main():
+    print(Integrals(1,1,0.1,0.1))
 
+
+main()
