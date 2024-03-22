@@ -38,8 +38,8 @@ def main():
     b = 1
 
     resolution = 10
-    alpha = np.logspace(-1,-7,resolution)
-    cutoff = np.logspace(1,7, resolution)
+    alpha = np.logspace(-1,-6.5,resolution)
+    cutoff = np.logspace(1,6.5, resolution)
 
     A, C = np.meshgrid(alpha, cutoff, indexing='ij')
     Z = np.zeros_like(A)
