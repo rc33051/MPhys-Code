@@ -1,6 +1,6 @@
 import numpy as np
 from gab_large_cutoff import g_ab_parallel as g_ab_large
-from gab_large_cutoff import g_ab
+#from gab_large_cutoff import g_ab
 from math import comb
 from math import gamma as gam_f
 from scipy.special import hyp1f1
@@ -177,11 +177,15 @@ def deltaFV(a = 1, b= 0, d_vec = np.array([1,0,0]), x = 0, cutoff = 2e4, alpha =
     if (a==0 and b==0): #the G_00 term will always be 0
         return 0
     elif a-b>=2:
-        return g(a,b,d_vec,x,6e3, 0, ML)#-gam**(2*b+1)*Integrals(a,b,x,alpha)
+
+
+        #here the cutoff is set manually
+
+        return g_ab_large(a,b,d_vec,x,5e5, 0, ML)#-gam**(2*b+1)*Integrals(a,b,x,alpha)
     
     elif (a>=b): #if a = b then we need the integral for convergence
         if cutoff>1e4:
-            return g_ab(a,b,d_vec,x, cutoff, alpha, ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
+            return g_ab_large(a,b,d_vec,x, cutoff, alpha, ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
         else:
             return g(a,b,d_vec,x,cutoff, alpha, ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
     
@@ -221,6 +225,7 @@ def derivative(n_max = 1, d_vec = np.array([1,0,0]), x = 0, alpha = 0.01, cutoff
 
     #print(FV_matrix)
 
+
     derivatives = np.array([])
     for n in range(1,n_max+1):
         K = np.zeros((n_max+1,n_max+1))
@@ -230,39 +235,46 @@ def derivative(n_max = 1, d_vec = np.array([1,0,0]), x = 0, alpha = 0.01, cutoff
         D_n = K* FV_matrix
         derivatives = np.append(derivatives,np.sum(D_n ))
 
-    return derivatives/np.sqrt(4*np.pi)
+    return derivatives/np.sqrt(4*np.pi), FV_matrix
     
 
 def main():
 
-    n_max = 2
+    n_max =1
     # 
     I, J =np.mgrid[0:n_max+1,0:n_max+1] 
 
-    # C_ij_matrix = np.zeros_like(I)
-    # for i in range(n_max+1):
-    #     for j in range(n_max+1):
-    #         C_ij_matrix[i,j] = C_ij(n_max,i,j)
-
-    # print(C_ij_matrix)
-    ML = 4
-    d_vec = np.array([1,0,0])
-    x  = 0.643941
-    alpha = 0.0001
-    cutoff = 1e5
-
-    deltaFV_matrix = np.zeros((n_max+1,n_max+1))
+    C_ij_matrix = np.zeros_like(I)
     for i in range(n_max+1):
         for j in range(n_max+1):
-            deltaFV_matrix[i,j] = deltaFV(i,j,d_vec, x, cutoff, alpha, ML)
+            C_ij_matrix[i,j] = C_ij(n_max,i,j)
 
-    print(deltaFV_matrix)
-
-
+    print(C_ij_matrix)
 
 
+    d = 4
+    ML = 6
+    x = 5
+    K = np.zeros((n_max+1,n_max+1))
+    for i in range(n_max+1):
+        for j in range(n_max+1):
+            K[i,j] = K_ij(n_max,i,j, x, d, ML)
 
-if __name__ == '__main__':
-    multiprocessing.freeze_support()
-    main()
-main()
+
+    #print(K)
+    # ML = 4
+    # d_vec = np.array([1,0,0])
+    # x  = 0.643941
+    # alpha = 0.0001
+    # cutoff = 1e5
+
+    # deltaFV_matrix = np.zeros((n_max+1,n_max+1))
+    # for i in range(n_max+1):
+    #     for j in range(n_max+1):
+    #         deltaFV_matrix[i,j] = deltaFV(i,j,d_vec, x, cutoff, alpha, ML)
+
+    # print(deltaFV_matrix)
+
+
+
+#main()

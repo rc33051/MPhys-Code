@@ -15,7 +15,7 @@ def limiting(a,b, d_vec, x, alpha, cutoff, ML):
     mtilde_sq = (ML/np.pi)**2
     beta = d/np.sqrt(d**2 + 4*x+mtilde_sq)
     gam =1/np.sqrt(1-beta**2)
-    print(a, b)
+    #print(a, b)
     #if cutoff>5e3:
     #print('ok')
     #print(a,b)
@@ -63,7 +63,7 @@ def main():
     np.savez("temp", Z = Z)
     print(Z)
 
-main()
+#main()
 
 
 

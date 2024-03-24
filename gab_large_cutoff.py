@@ -2,6 +2,7 @@ import numpy as np
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
 import multiprocessing
+import os
 
 
 
@@ -62,7 +63,7 @@ def g_ab(a=1,b=0,d = np.array([0,0,0]),q_2_star=1.5, cutoff=9, alpha=1,  ML = 4)
 
 def g_ab_parallel(a=1, b=0, d=np.array([0, 0, 0]), q_2_star=1.5, cutoff=9, alpha=1, ML=4):
 
-
+    total_processors = os.cpu_count()
 
     m_tilde_sq = (ML/np.pi)**2
     d_scalar = np.linalg.norm(d)
@@ -95,7 +96,7 @@ def g_ab_parallel(a=1, b=0, d=np.array([0, 0, 0]), q_2_star=1.5, cutoff=9, alpha
                     tasks.append(args)
 
 
-    with ProcessPoolExecutor() as executor:
+    with ProcessPoolExecutor(max_workers = total_processors//2) as executor:
         results = executor.map(unpack_evaluate_terms_summand, tasks)
 
     return sum(results)
@@ -146,15 +147,15 @@ if __name__ == '__main__':
     multiprocessing.freeze_support()
 
 
-if __name__ == "__main__":
-    a, b = 2, 1  # Example values for a and b
-    d = np.array([1, 0, 0])
-    q_2_star = 0
-    cutoff = 1e5
-    alpha = 0
-    ML = 4
-    # Call your parallel function within this protected block
-    result = g_ab_parallel(a, b, d, q_2_star, cutoff, alpha, ML)
-    print(result)
+# if __name__ == "__main__":
+#     a, b = 2, 1  # Example values for a and b
+#     d = np.array([1, 0, 0])
+#     q_2_star = 0
+#     cutoff = 1e5
+#     alpha = 0
+#     ML = 4
+#     # Call your parallel function within this protected block
+#     result = g_ab_parallel(a, b, d, q_2_star, cutoff, alpha, ML)
+#     print(result)
 
 
