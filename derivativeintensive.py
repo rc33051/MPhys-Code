@@ -67,18 +67,18 @@ def main():
     #os.chdir('MPhys-Code')
     #print(    np.load(file_location([0,0,0], ML)) )
 
-    ds = np.array([[0,0,0], [1,0,0],[1,1,0] ,[1,1,1], [2,0,0] ])
-    #ds = np.array([ [0,0,1],[0,1,1] ,[1,1,1], [0,0,2] ])
-    for i in range(len(ds)):
-        d_vec = ds[i]
-        print('Next ', ds[i])
-        derivative_directory(d_vec, ML, n_max, alpha,cutoff)
+    # ds = np.array([[0,0,0], [1,0,0],[1,1,0] ,[1,1,1], [2,0,0] ])
+    # #ds = np.array([ [0,0,1],[0,1,1] ,[1,1,1], [0,0,2] ])
+    # for i in range(len(ds)):
+    #     d_vec = ds[i]
+    #     print('Next ', ds[i])
+    #     derivative_directory(d_vec, ML, n_max, alpha,cutoff)
 
     ML = 6
     print(ML)
 
 
-    ds = np.array([ [0,0,1],[0,1,1] ,[1,1,1], [0,0,2] ])
+    ds = np.array([ [0,0,2]])  #,[0,1,1] ,[1,1,1], [0,0,2] ])
 
     for i in range(len(ds)):
         d_vec = ds[i]
