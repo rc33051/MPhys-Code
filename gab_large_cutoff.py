@@ -1,6 +1,9 @@
 import numpy as np
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
+import multiprocessing
+
+
 
 
 def g_ab(a=1,b=0,d = np.array([0,0,0]),q_2_star=1.5, cutoff=9, alpha=1,  ML = 4):
@@ -11,6 +14,10 @@ def g_ab(a=1,b=0,d = np.array([0,0,0]),q_2_star=1.5, cutoff=9, alpha=1,  ML = 4)
     using the np.mehsgrid function. They are Lorentz transformed, evaluated
     using the expression from K-S-S and summed.
     '''
+
+ 
+
+
 
     m_tilde_sq = (ML/np.pi)**2
     d_scalar = np.linalg.norm(d)
@@ -134,15 +141,20 @@ def evaluate_terms_summand(lower_bounds, upper_bounds,a,b, x, cutoff, alpha,  be
     result  = np.sum(terms)
     return result
 
-# if __name__ == "__main__":
-#     a, b = 2, 1  # Example values for a and b
-#     d = np.array([1, 0, 0])
-#     q_2_star = 0
-#     cutoff = 1e6
-#     alpha = 0
-#     ML = 4
-#     # Call your parallel function within this protected block
-#     result = g_ab_parallel(a, b, d, q_2_star, cutoff, alpha, ML)
-#     print(result)
+
+if __name__ == '__main__':
+    multiprocessing.freeze_support()
+
+
+if __name__ == "__main__":
+    a, b = 2, 1  # Example values for a and b
+    d = np.array([1, 0, 0])
+    q_2_star = 0
+    cutoff = 1e5
+    alpha = 0
+    ML = 4
+    # Call your parallel function within this protected block
+    result = g_ab_parallel(a, b, d, q_2_star, cutoff, alpha, ML)
+    print(result)
 
 
