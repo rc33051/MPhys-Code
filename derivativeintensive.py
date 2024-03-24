@@ -65,7 +65,7 @@ def main():
     #os.chdir('MPhys-Code')
     #print(    np.load(file_location([0,0,0], ML)) )
 
-    ds = np.array([ [0,0,0], [1,0,0],[1,1,0] ,[1,1,1], [2,0,0] ])
+    ds = np.array([ [1,0,0],[1,1,0] ,[1,1,1], [2,0,0] ])
     #ds = np.array([ [0,0,1],[0,1,1] ,[1,1,1], [0,0,2] ])
     for i in range(len(ds)):
         d_vec = ds[i]
