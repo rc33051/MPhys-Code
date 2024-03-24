@@ -176,7 +176,7 @@ def deltaFV(a = 1, b= 0, d_vec = np.array([1,0,0]), x = 0, cutoff = 2e4, alpha =
 
     if (a==0 and b==0): #the G_00 term will always be 0
         return 0
-    elif a-b>2:
+    elif a-b>=2:
         return g(a,b,d_vec,x,6e3, 0, ML)#-gam**(2*b+1)*Integrals(a,b,x,alpha)
     
     elif (a>=b): #if a = b then we need the integral for convergence

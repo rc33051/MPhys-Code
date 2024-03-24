@@ -60,9 +60,9 @@ def main():
     n_max = 2
 
 
-    print(os.getcwd())
+    #print(os.getcwd())
     # chagne working directory to the one with the data
-    os.chdir('MPhys-Code')
+    #os.chdir('MPhys-Code')
     #print(    np.load(file_location([0,0,0], ML)) )
 
     ds = np.array([ [0,0,0], [1,0,0],[1,1,0] ,[1,1,1], [2,0,0] ])
