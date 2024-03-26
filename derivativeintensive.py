@@ -135,18 +135,13 @@ def main1():
 
 
 def main2():
-
-
     ML =4 
     d_vec = np.array([0,0,0])   
     alpha = 1e-3
-
     n_max = 2
 
 
     f = lambda alpha, gamma: (30/alpha)*gamma**2
-
-
 
 
     xs = np.linspace(0.01, 9, 500)
@@ -168,8 +163,6 @@ def main2():
 
 
     f = lambda alpha, gamma: (30/alpha)*gamma**2
-
-
 
 
     xs = np.linspace(0.01, 6.015779500086, 500)
