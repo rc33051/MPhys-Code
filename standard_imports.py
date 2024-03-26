@@ -4,7 +4,7 @@ from zeta import *
 from tqdm import tqdm
 from pathlib import Path
 from derivative import *
-
+import os
 
 
 
@@ -16,6 +16,19 @@ def file_location(d_vec = np.array([0,0,1]), ML = 4):
     path = directory+ folder_name + "/data.npz"
     return path
 
+def derivative_location(d_vec, ML):
+    d_vec = np.array(d_vec)
+    directory = "derivatives/ML_{}/".format(ML)
+    folder_name = "d_" + str(d_vec).replace(" ", "").replace("[", "").replace("]", "")
+    file_name = "data"
+    base_path = os.path.join(directory,folder_name, file_name)
+    path_full = f"{base_path}_{{}}.npz"
+    counter = 0
+    while os.path.exists(path_full.format(counter)):
+        counter += 1
+
+    counter -= 1
+    return path_full.format(counter)
 
 
 def plot_nice(q_2= np.array([]), z_d_results = np.array([]),asymptotes = np.array([]), zeros = np.array([]),  d_vec = np.array([0,0,1]) ):
@@ -26,7 +39,7 @@ def plot_nice(q_2= np.array([]), z_d_results = np.array([]),asymptotes = np.arra
     ###########Creates Plots#####################  
 
 
-    #z_d_plot[z_d_plot<(-1e-5)] = np.nan
+    z_d_plot[np.abs(z_d_plot)>(1e4)] = np.nan
 
 
     plt.plot(q_2_plot, z_d_plot, linewidth = 1)

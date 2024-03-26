@@ -59,8 +59,9 @@ def main():
     print(ML)
     alpha = 1e-4
     cutoff = 5e5
-    n_max = 2
+    n_max = 4
 
+    alpha = 1e-3
 
     #print(os.getcwd())
     # chagne working directory to the one with the data
@@ -74,11 +75,11 @@ def main():
     #     print('Next ', ds[i])
     #     derivative_directory(d_vec, ML, n_max, alpha,cutoff)
 
-    ML = 6
+    ML = 4
     print(ML)
 
 
-    ds = np.array([ [0,0,2]])  #,[0,1,1] ,[1,1,1], [0,0,2] ])
+    ds = np.array([ [0,0,0]])  #,[0,1,1] ,[1,1,1], [0,0,2] ])
 
     for i in range(len(ds)):
         d_vec = ds[i]
@@ -113,7 +114,7 @@ def main1():
 
     cutoffs = np.zeros_like(q_derivatives)
 
-    for i in range(len(q_derivatives)):
+    for i in tqdm(range(len(q_derivatives))):
         cutoffs[i] = relation_alpha_cutoff(d_vec, alpha, q_derivatives[i], ML)
 
     print(cutoffs)
@@ -132,6 +133,54 @@ def main1():
 
     plt.show()
 
+
+def main2():
+
+
+    ML =4 
+    d_vec = np.array([0,0,0])   
+    alpha = 1e-3
+
+    n_max = 2
+
+
+    f = lambda alpha, gamma: (30/alpha)*gamma**2
+
+
+
+
+    xs = np.linspace(0.01, 9, 500)
+    firsts = np.zeros((len(xs),n_max))
+    for i in tqdm(range(len(xs))):
+        gamma = np.sqrt(1 + np.linalg.norm(d_vec)**2/( (ML/np.pi**2 + 4 * xs[i])))
+        firsts[i] = derivative(n_max, d_vec, xs[i],alpha, f(alpha, gamma) )[0]
+
+
+
+    np.save('derivative_graph_000.npy', firsts)
+
+
+    ML =4 
+    d_vec = np.array([0,0,1])   
+    alpha = 1e-3
+
+    n_max = 2
+
+
+    f = lambda alpha, gamma: (30/alpha)*gamma**2
+
+
+
+
+    xs = np.linspace(0.01, 6.015779500086, 500)
+    firsts = np.zeros((len(xs),n_max))
+    for i in tqdm(range(len(xs))):
+        gamma = np.sqrt(1 + np.linalg.norm(d_vec)**2/( (ML/np.pi**2 + 4  *xs[i])))
+        firsts[i] = derivative(n_max, d_vec, xs[i],alpha, f(alpha, gamma) )[0]
+
+
+    np.save('derivative_graph_001.npy', firsts)
+
     
 
-main()
+main2()

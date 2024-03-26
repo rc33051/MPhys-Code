@@ -96,7 +96,7 @@ def g_ab_parallel(a=1, b=0, d=np.array([0, 0, 0]), q_2_star=1.5, cutoff=9, alpha
                     tasks.append(args)
 
 
-    with ProcessPoolExecutor(max_workers = total_processors//2) as executor:
+    with ProcessPoolExecutor(max_workers = total_processors) as executor:
         results = executor.map(unpack_evaluate_terms_summand, tasks)
 
     return sum(results)

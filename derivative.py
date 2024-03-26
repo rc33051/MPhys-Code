@@ -160,6 +160,27 @@ def g(a = 1, b = 1, d = np.array([1,0,0]), x = 0 ,  cutoff = 2e4,alpha = 0.1, ML
 
 
 
+def FV_calc(a = 1, b= 0, d_vec = np.array([1,0,0]), x = 0, cutoff = 2e4, alpha = 0.01, ML = 4):
+
+
+    
+    if alpha == 0: #if alpha = 0, the integral is 0
+        if cutoff>1e4:
+            return g_ab_large(a,b,d_vec,x, cutoff, alpha, ML)
+        else:
+            return g(a,b,d_vec,x,cutoff, alpha, ML)
+        
+    d = np.linalg.norm(d_vec)
+    m_tilde_sq = (ML/np.pi)**2
+    beta = np.sqrt(d**2/(4*x+m_tilde_sq+d**2))
+    gam = np.sqrt(1/(1-beta**2))
+    
+    if cutoff>1e4: #calculate the FV difference
+        return g_ab_large(a,b,d_vec,x, cutoff, alpha, ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
+    else:
+        return g(a,b,d_vec,x,cutoff, alpha, ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
+
+
 def deltaFV(a = 1, b= 0, d_vec = np.array([1,0,0]), x = 0, cutoff = 2e4, alpha = 0.01, ML = 4, cutoff_high = 1e5):
     '''
     Returns the value of the finite volume operator.
@@ -168,38 +189,41 @@ def deltaFV(a = 1, b= 0, d_vec = np.array([1,0,0]), x = 0, cutoff = 2e4, alpha =
     sums in the different diagonals.
 
     '''
-    d = np.linalg.norm(d_vec)
-    m_tilde_sq = (ML/np.pi)**2
-    beta = np.sqrt(d**2/(4*x+m_tilde_sq+d**2))
-    gam = np.sqrt(1/(1-beta**2))
 
 
     if (a==0 and b==0): #the G_00 term will always be 0
         return 0
-    elif a-b>=2:
-
-
-        #here the cutoff is set manually
-
-        return g_ab_large(a,b,d_vec,x,5e5, 0, ML)#-gam**(2*b+1)*Integrals(a,b,x,alpha)
     
-    elif (a>=b): #if a = b then we need the integral for convergence
-        if cutoff>1e4:
-            return g_ab_large(a,b,d_vec,x, cutoff, alpha, ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
-        else:
-            return g(a,b,d_vec,x,cutoff, alpha, ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
-    
-    # elif (a>b): #if a = b+1 th sum converges but we need need higher cutoff
-    #     if cutoff_high>1e4:
-    #         return g_ab_large(a,b,d_vec,x, cutoff_high, alpha, ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
-    #     else:
-    #         return g(a,b,d_vec,x, cutoff_high, alpha,   ML)-gam**(2*b+1)*Integrals(a,b,x,alpha)
-    
-    # elif a>b: #if a>b the sum converges quickly
-    #     return g(a,b,d_vec,x, 1e2, 0,   ML)
-
-    else: #if a<b the FV operator is 0
+    if a<b:
         return 0
+    
+    if a == b:
+        return FV_calc(a,b,d_vec,x,cutoff, alpha, ML)
+        
+    #each one of the converging cases was numerically checked 
+    #to give an error of much less than 1e-8
+    
+    elif a-b == 1: 
+        alpha = 1e-3
+        cutoff = 10**(1.7)/alpha
+
+    elif a-b == 2:
+        alpha = 1e-12
+        cutoff = 3e4
+        
+    elif a-b == 3:
+        alpha = 1e-12
+        cutoff = 1e4
+
+    elif a-b == 4:
+        alpha = 1e-12
+        cutoff = 3e3
+    
+    elif a-b>4:
+        alpha = 0
+        cutoff = 1e4
+
+    return FV_calc(a,b,d_vec,x,cutoff, alpha, ML)
 
 
 
