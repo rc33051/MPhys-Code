@@ -64,7 +64,7 @@ The function takes a beatiful form when we graph Zeta vs. the $q^2$.
 
 ![alt text](PublicSummary/zeta_stuff.png)
 
-<audio src='PublicSummary/d000.mp3' width=180/>
+
 
 
 
@@ -76,8 +76,29 @@ On the graph, the dashed, black lines mark the asymptotes of the function and th
 Although it is relatively simple to find the asymptotes of Zeta, the zeros of the function have to be found 
 
 
+For $\vec{d} = [0,0,0]$
+<audio controls>
+  <source src='PublicSummary/d000.mp3'type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
 
+For $\vec{d} = [0,0,1]$
+<audio controls>
+  <source src='PublicSummary/d001.mp3'type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
 
+For $\vec{d} = [0,1,1]$
+<audio controls>
+  <source src='PublicSummary/d011.mp3'type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+For $\vec{d} = [1,1,1]$
+<audio controls>
+  <source src='PublicSummary/d111.mp3'type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
 
 
 
