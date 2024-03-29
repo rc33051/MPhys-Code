@@ -62,7 +62,7 @@ This function is quite complitcated, describing what each varible does, though i
 
 The function takes a beatiful form when we graph Zeta vs. the $q^2$.
 
-![alt text](PublicSummary/zeta_stuff.png)
+![alt text](https://github.com/rc33051/MPhys-Code/PublicSummary/zeta_stuff.png)
 
 
 
@@ -79,7 +79,7 @@ Although it is relatively simple to find the asymptotes of Zeta, the zeros of th
 For $\vec{d} = [0,0,0]$:
 
 <audio controls>
-  <source src='PublicSummary/d000.mp3'type="audio/mpeg">
+  <source src='https://github.com/rc33051/MPhys-Code/PublicSummary/d000.mp3'type="audio/mpeg">
   Your browser does not support the audio element.
 </audio>
 
@@ -87,21 +87,21 @@ For $\vec{d} = [0,0,0]$:
 For $\vec{d} = [0,0,1]$:
 
 <audio controls>
-  <source src='PublicSummary/d001.mp3'type="audio/mpeg">
+  <source src='https://github.com/rc33051/MPhys-Code/PublicSummary/d001.mp3'type="audio/mpeg">
   Your browser does not support the audio element.
 </audio>
 
 For $\vec{d} = [0,1,1]$:
 
 <audio controls>
-  <source src='PublicSummary/d011.mp3'type="audio/mpeg">
+  <source src='https://github.com/rc33051/MPhys-Code/PublicSummary/d011.mp3'type="audio/mpeg">
   Your browser does not support the audio element.
 </audio>
 
 For $\vec{d} = [1,1,1]$:
 
 <audio controls>
-  <source src='PublicSummary/d111.mp3'type="audio/mpeg">
+  <source src='https://github.com/rc33051/MPhys-Code/PublicSummary/d111.mp3'type="audio/mpeg">
   Your browser does not support the audio element.
 </audio>
 
