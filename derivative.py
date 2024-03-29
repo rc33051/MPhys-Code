@@ -256,6 +256,9 @@ def derivative(n_max = 1, d_vec = np.array([1,0,0]), x = 0, alpha = 0.01, cutoff
         for i in range(n_max+1):
             for j in range(n_max+1):
                 K[i,j] = K_ij(n,i,j,x,d, ML)
+        
+        print(K)
+        print(FV_matrix)
         D_n = K* FV_matrix
         derivatives = np.append(derivatives,np.sum(D_n ))
 

@@ -1,0 +1,12 @@
+# The Zeta Function and Lattice QCD
+
+## Introduction and Overview
+
+
+Quantum Chromodynamics is the theory of the strong nuclear force, which is governing interactions of particles in the atomic nucleus and is one of the four fundamental forces of nature. Since nuclear particles are very small and light [citation needed] a suitable theory of their interaction must incorporate both Einstein’s theory of special relativity (they move really fast) and quantum mechanics (they are really small).  (QFT stuff), which is the wider framework in which QCD is formulated
+
+In practice, any successful scientific theory must make predictions, which in the case of QCD are tested in particle accelerators like CERN in Geneva, Switzerland. The quantity checked in experiments at particle accelerators are generally probabilities of certain events occurring, for example the probability that two particles (say protons) scatter off each other, ie. that they collide and then spread out. This probability is known as the "cross section" of the event,  and it is usually obtained from something called the scattering amplitude. The predicitions of quantum field theories are these amplitudes, which can then be tested at the particle accelerators. 
+
+## Why QCD is difficult
+
+However, obtaining these amplitudes in QCD is much more challenging than in comparable other quantum field theories, such as the theory of the electric force. The standard approach for predicting the amplitudes involves approximate solutions

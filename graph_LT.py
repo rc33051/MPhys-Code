@@ -2,9 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 from scipy.spatial import ConvexHull
+import seaborn as sns
 
 def graph_LT(q_2_star=1.5, cutoff=9, d = np.array([0,0,0]), ML = 4):
-        
+    sns.set(style="whitegrid")
+    sns.set_palette('muted')
     d_scalar = np.linalg.norm(d)
 
 
@@ -19,7 +21,7 @@ def graph_LT(q_2_star=1.5, cutoff=9, d = np.array([0,0,0]), ML = 4):
         gamma = 1
         beta_norm = d
 
-     
+    
     #create spherical shell containing the n vectors
     rng = np.arange(-int(np.sqrt(cutoff))-1, int(np.sqrt(cutoff))+2)
     res = (rng[:,np.newaxis, np.newaxis]**2+rng[np.newaxis,:,np.newaxis]**2+rng[np.newaxis,np.newaxis,:]**2)
@@ -31,7 +33,7 @@ def graph_LT(q_2_star=1.5, cutoff=9, d = np.array([0,0,0]), ML = 4):
     r_2 = np.einsum("ij,ij->i", r,r)
     r_parallel  = np.einsum("ij,j->i", r, beta_norm)
     r_perp = r- r_parallel[:,np.newaxis]*beta_norm
-    
+
     r_perp_sq = r_2 -r_parallel**2
     omega_r = np.sqrt(r_2+m_tilde_sq/4)
     r_star_parallel = gamma*(r_parallel-omega_r*beta)
@@ -39,7 +41,7 @@ def graph_LT(q_2_star=1.5, cutoff=9, d = np.array([0,0,0]), ML = 4):
     r_star_2 = np.einsum("ij,ij->i", r_star,r_star)
 
     #3d plot of r_star
-    fig = plt.figure()
+    fig = plt.figure(figsize=(5,4), dpi=300)
     ax = fig.add_subplot(111, projection='3d')
     #set view on xy plane
     ax.view_init(elev=0, azim=90)
@@ -58,19 +60,19 @@ def graph_LT(q_2_star=1.5, cutoff=9, d = np.array([0,0,0]), ML = 4):
     # Plot the bounding surface for r_star
     for s in hull_r_star.simplices:
         s = np.append(s, s[0])  # Close the loop
-        ax.plot(r_star[s, 0], r_star[s, 1], r_star[s, 2], "r-", label = "$\\rho$")
+        ax.plot(r_star[s, 0], r_star[s, 1], r_star[s, 2], "r-", linewidth=0.5, label = "$\\rho$")
 
     # Plot the bounding surface for r
-    
+
     for s in hull_r.simplices:
         s = np.append(s, s[0])  # Close the loop
-        ax.plot(r[s, 0], r[s, 1], r[s, 2], "b-", label="$\Xi$")
+        ax.plot(r[s, 0], r[s, 1], r[s, 2], "b-",linewidth=0.5, label="$\Xi$")
 
 
     # Plot the bounding surface for r_star_bounded
     for s in hull_r_star_bounded.simplices:
         s = np.append(s, s[0])  # Close the loop
-        ax.plot(r_star_bounded[s, 0], r_star_bounded[s, 1], r_star_bounded[s, 2], "g-", label="$\kappa$")
+        ax.plot(r_star_bounded[s, 0], r_star_bounded[s, 1], r_star_bounded[s, 2], "g-", linewidth=0.5,label="$\kappa$")
 
     handles, labels = plt.gca().get_legend_handles_labels()
     ax.set_aspect('equal')
@@ -81,11 +83,14 @@ def graph_LT(q_2_star=1.5, cutoff=9, d = np.array([0,0,0]), ML = 4):
     ax.set_yticks([])
 
     #create suitable title
-    plt.title("Bounding Surfaces for $x = {}$, $d = {}$, $\Xi = {}$, $\\kappa = {}$".format(q_2_star, d, round(np.sqrt(cutoff)), round(kappa)))
+    plt.title("Bounding Surfaces for $x = {}$, $d = {}$, $\Xi = {}$, $\\kappa = {}$".format(q_2_star, d, round(np.sqrt(cutoff)), round(kappa, 2)))
 
     labels, ids = np.unique(labels, return_index=True)
     handles = [handles[i] for i in ids]
-    plt.legend(handles, labels, loc='best')
+    plt.legend(handles, labels, loc='center right',  bbox_to_anchor=(1, 1.5))
     plt.show()
 
 graph_LT(0.5,1e2, d=np.array([0,0,1]))
+
+
+
